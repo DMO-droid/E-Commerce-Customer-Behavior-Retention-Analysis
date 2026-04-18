@@ -7,7 +7,7 @@ import numpy as np
 import os, warnings
 warnings.filterwarnings("ignore")
 
-DATA_DIR = r"C:\Users\X1 Carbon Gen 9\Documents\Data Analys\Sales & Profit"
+DATA_DIR = "Sales & Profit"
 DB_PATH  = os.path.join(DATA_DIR, "sales_profit.db")
 OUT_DIR  = os.path.join(DATA_DIR, "output")
 os.makedirs(OUT_DIR, exist_ok=True)
@@ -17,7 +17,7 @@ plt.rcParams.update({"figure.dpi": 130, "font.size": 10})
 
 conn = sqlite3.connect(DB_PATH)
 
-# ─── CHART 1: FUNNEL ─────────────────────────────────────────────────────────
+# FUNNEL
 sql_funnel = """
 WITH ec AS (
     SELECT
@@ -52,7 +52,7 @@ plt.savefig(os.path.join(OUT_DIR, "ideal1_funnel.png"))
 plt.close()
 print("Saved ideal1_funnel.png")
 
-# ─── CHART 2: RFM SEGMENTS ───────────────────────────────────────────────────
+# RFM SEGMENTS
 sql_rfm = """
 WITH ref AS (SELECT DATE(MAX(order_date)) AS mx FROM orders),
 raw AS (
@@ -112,7 +112,7 @@ plt.savefig(os.path.join(OUT_DIR, "ideal2_rfm.png"), bbox_inches="tight")
 plt.close()
 print("Saved ideal2_rfm.png")
 
-# ─── CHART 3: CATEGORY PERFORMANCE ──────────────────────────────────────────
+# CHART 3: CATEGORY PERFORMANCE
 sql_cat = """
 SELECT p.category,
        ROUND(SUM(oi.item_total),0) AS revenue,
@@ -157,7 +157,7 @@ plt.savefig(os.path.join(OUT_DIR, "ideal3_category.png"), bbox_inches="tight")
 plt.close()
 print("Saved ideal3_category.png")
 
-# ─── CHART 4: COHORT RETENTION HEATMAP ───────────────────────────────────────
+# COHORT RETENTION HEATMAP
 sql_cohort = """
 WITH fo AS (
     SELECT user_id, STRFTIME('%Y-%m', MIN(order_date)) AS cohort
@@ -195,7 +195,7 @@ plt.savefig(os.path.join(OUT_DIR, "ideal4_cohort.png"))
 plt.close()
 print("Saved ideal4_cohort.png")
 
-# ─── CHART 5: REVIEWS IMPACT ─────────────────────────────────────────────────
+# REVIEWS IMPACT
 sql_rev = """
 WITH ps AS (
     SELECT p.product_id,
