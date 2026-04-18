@@ -2,10 +2,10 @@ import sqlite3
 import pandas as pd
 import os
 
-DATA_DIR = r"C:\Users\X1 Carbon Gen 9\Documents\Data Analys\Sales & Profit"
+DATA_DIR = "Sales & Profit"
 DB_PATH = os.path.join(DATA_DIR, "sales_profit.db")
 
-# ─── PHASE 1: SETUP ───────────────────────────────────────────────────────────
+# SETUP
 
 def create_db():
     conn = sqlite3.connect(DB_PATH)
