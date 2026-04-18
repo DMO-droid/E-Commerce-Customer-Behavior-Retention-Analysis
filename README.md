@@ -1,10 +1,10 @@
-# Sales & Profit — SQL Data Analysis Project
+# Sales & Profit - SQL Data Analysis Project
 
-A end-to-end data analysis project using **SQLite + Python**, exploring customer behavior, product performance, and business health across 170,000+ records.
+A end-to-end data analysis project using **SQLite + Python**, exploring customer behavior, product performance, and business health across 170,000+ records
 
 ---
 
-## Dataset
+## 📊 Dataset
 
 | File | Rows | Description |
 |---|---|---|
@@ -15,7 +15,7 @@ A end-to-end data analysis project using **SQLite + Python**, exploring customer
 | `reviews.csv` | 15,000 | Customer reviews (rating, text, date) |
 | `events.csv` | 80,000 | Behavioral events (view, wishlist, cart, purchase) |
 
-**Data Quality:** 0 NULLs on key columns, 0 duplicates, 0 orphan foreign keys across all 6 tables.
+**Data Quality:** 0 NULLs on key columns, 0 duplicates, 0 orphan foreign keys across all 6 tables
 
 ---
 
@@ -23,16 +23,9 @@ A end-to-end data analysis project using **SQLite + Python**, exploring customer
 
 ```
 Sales & Profit/
-├── sales_profit.db          # SQLite database
 ├── setup_and_analysis.py    # Phase 1: DB setup + data quality checks
 ├── analysis.py              # Phase 2: All 5 SQL analyses
-├── visualize.py             # Phase 3: Charts (matplotlib/seaborn)
-├── output/
-│   ├── ideal1_funnel.png
-│   ├── ideal2_rfm.png
-│   ├── ideal3_category.png
-│   ├── ideal4_cohort.png
-│   └── ideal5_reviews.png
+├── visualize.py             # Phase 3: Charts 
 └── README.md
 ```
 
@@ -42,43 +35,23 @@ Sales & Profit/
 
 ```bash
 # 1. Install dependencies
-pip install pandas matplotlib seaborn
+`pip install pandas matplotlib seaborn`
 
 # 2. Setup database & run quality checks
-python setup_and_analysis.py
+`python setup_and_analysis.py`
 
 # 3. Run all SQL analyses
-python analysis.py
+`python analysis.py`
 
 # 4. Generate charts
-python visualize.py
+`python visualize.py`
 ```
 
 ---
 
-## Analysis 1 — Customer Journey & Funnel
+## 1. Customer Journey & Funnel
 
 **Goal:** Track user drop-off from first product view to completed order.
-
-```sql
-WITH event_counts AS (
-    SELECT
-        SUM(CASE WHEN event_type = 'view'     THEN 1 ELSE 0 END) AS views,
-        SUM(CASE WHEN event_type = 'wishlist' THEN 1 ELSE 0 END) AS wishlists,
-        SUM(CASE WHEN event_type = 'cart'     THEN 1 ELSE 0 END) AS carts,
-        SUM(CASE WHEN event_type = 'purchase' THEN 1 ELSE 0 END) AS purchases
-    FROM events
-),
-order_count AS (
-    SELECT COUNT(DISTINCT order_id) AS completed_orders
-    FROM orders WHERE order_status = 'completed'
-)
-SELECT 'View'             AS stage, views      AS users FROM event_counts UNION ALL
-SELECT 'Wishlist',         wishlists FROM event_counts UNION ALL
-SELECT 'Cart',             carts     FROM event_counts UNION ALL
-SELECT 'Purchase',         purchases FROM event_counts UNION ALL
-SELECT 'Completed Order',  completed_orders FROM order_count;
-```
 
 **Results:**
 
@@ -89,6 +62,8 @@ SELECT 'Completed Order',  completed_orders FROM order_count;
 | Wishlist | 7,946 | 14.2% |
 | Purchase | 4,006 | 7.2% |
 | Completed Order | 4,021 | 7.2% |
+
+
 
 **Findings:**
 - The biggest drop-off is View → Cart (only 21.5% proceed). This is the highest-leverage point for UX optimization.
