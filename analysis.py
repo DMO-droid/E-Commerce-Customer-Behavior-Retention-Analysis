@@ -16,7 +16,7 @@ plt.rcParams.update({"figure.dpi": 130, "font.size": 10})
 
 conn = sqlite3.connect(DB_PATH)
 
-# ─── IDEAL 1: CUSTOMER JOURNEY & FUNNEL ANALYSIS ─────────────────────────────
+# CUSTOMER JOURNEY & FUNNEL ANALYSIS
 print("\n=== IDEAL 1: Customer Journey & Funnel ===")
 
 sql_funnel = """
@@ -47,7 +47,7 @@ df_funnel["conv_rate"] = (df_funnel["users"] / df_funnel["users"].iloc[0] * 100)
 print("\nConversion rates vs View:")
 print(df_funnel[["stage","conv_rate"]].to_string(index=False))
 
-# ─── IDEAL 2: RFM SEGMENTATION ───────────────────────────────────────────────
+# IDEAL 2: RFM SEGMENTATION
 print("\n=== IDEAL 2: RFM Segmentation ===")
 
 sql_rfm = """
@@ -93,7 +93,7 @@ ORDER BY customer_count DESC;
 df_rfm = pd.read_sql(sql_rfm, conn)
 print(df_rfm.to_string(index=False))
 
-# ─── IDEAL 3: PRODUCT & CATEGORY PERFORMANCE ─────────────────────────────────
+# PRODUCT & CATEGORY PERFORMANCE
 print("\n=== IDEAL 3: Product & Category Performance ===")
 
 sql_cat = """
@@ -132,7 +132,7 @@ df_top = pd.read_sql(sql_top_products, conn)
 print("\nTop 10 Products by Revenue:")
 print(df_top.to_string(index=False))
 
-# ─── IDEAL 4: COHORT RETENTION ───────────────────────────────────────────────
+# COHORT RETENTION
 print("\n=== IDEAL 4: Cohort Retention ===")
 
 sql_cohort = """
@@ -179,7 +179,7 @@ ORDER BY r.cohort_month, r.month_number;
 df_cohort = pd.read_sql(sql_cohort, conn)
 print(df_cohort.head(20).to_string(index=False))
 
-# ─── IDEAL 5: REVIEWS IMPACT ─────────────────────────────────────────────────
+# REVIEWS IMPACT
 print("\n=== IDEAL 5: Reviews Impact ===")
 
 sql_reviews = """
