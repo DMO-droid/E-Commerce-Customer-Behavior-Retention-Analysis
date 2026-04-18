@@ -6,7 +6,7 @@ import seaborn as sns
 import os, warnings
 warnings.filterwarnings("ignore")
 
-DATA_DIR = r"C:\Users\X1 Carbon Gen 9\Documents\Data Analys\Sales & Profit"
+DATA_DIR = "Sales & Profit"
 DB_PATH  = os.path.join(DATA_DIR, "sales_profit.db")
 OUT_DIR  = os.path.join(DATA_DIR, "output")
 os.makedirs(OUT_DIR, exist_ok=True)
