@@ -55,6 +55,26 @@ Sales & Profit/
 
 **Results:**
 
+```sql
+WITH event_counts AS (
+    SELECT
+        SUM(CASE WHEN event_type = 'view'     THEN 1 ELSE 0 END) AS views,
+        SUM(CASE WHEN event_type = 'wishlist' THEN 1 ELSE 0 END) AS wishlists,
+        SUM(CASE WHEN event_type = 'cart'     THEN 1 ELSE 0 END) AS carts,
+        SUM(CASE WHEN event_type = 'purchase' THEN 1 ELSE 0 END) AS purchases
+    FROM events
+),
+order_count AS (
+    SELECT COUNT(DISTINCT order_id) AS completed_orders
+    FROM orders WHERE order_status = 'completed'
+)
+SELECT 'View'             AS stage, views      AS users FROM event_counts UNION ALL
+SELECT 'Wishlist',         wishlists FROM event_counts UNION ALL
+SELECT 'Cart',             carts     FROM event_counts UNION ALL
+SELECT 'Purchase',         purchases FROM event_counts UNION ALL
+SELECT 'Completed Order',  completed_orders FROM order_count;
+```
+
 | Stage | Count | Conversion vs View |
 |---|---|---|
 | View | 56,013 | 100% |
@@ -63,23 +83,21 @@ Sales & Profit/
 | Purchase | 4,006 | 7.2% |
 | Completed Order | 4,021 | 7.2% |
 
-
-
 **Findings:**
-- The biggest drop-off is View → Cart (only 21.5% proceed). This is the highest-leverage point for UX optimization.
-- Wishlist-to-purchase conversion is low — wishlist feature may not be driving intent effectively.
-- Purchase and Completed Order counts are nearly identical, meaning fulfillment/cancellation is not a major issue.
+- The biggest drop-off is View → Cart (only 21.5% proceed). This is the highest-leverage point for UX optimization
+- Wishlist-to-purchase conversion is low - wishlist feature may not be driving intent effectively
+- Purchase and Completed Order counts are nearly identical, meaning fulfillment/cancellation is not a major issue
 
 **Business Recommendations:**
-- A/B test product page CTAs and "Add to Cart" button placement.
-- Trigger cart abandonment emails within 1 hour of cart add.
-- Consider removing or redesigning the wishlist flow if it's not converting.
+- A/B test product page CTAs and "Add to Cart" button placement
+- Trigger cart abandonment emails within 1 hour of cart add
+- Consider removing or redesigning the wishlist flow if it's not converting
 
 ---
 
-## Analysis 2 — RFM Customer Segmentation
+## RFM Customer Segmentation
 
-**Goal:** Classify customers by Recency, Frequency, and Monetary value to prioritize marketing spend.
+**Goal:** Classify customers by Recency, Frequency, and Monetary value to prioritize marketing spend
 
 ```sql
 WITH ref_date AS (SELECT DATE(MAX(order_date)) AS max_date FROM orders),
@@ -123,20 +141,20 @@ FROM rfm_scored;
 | At Risk | 632 | 422 | 2.3 | $1,653 |
 
 **Findings:**
-- "At Risk" customers average $1,653 revenue — nearly as high as Champions. They've bought frequently but haven't returned in 422 days on average.
-- "Lost" is the largest segment (1,554 customers) but lowest value — low ROI to re-engage.
-- "New Customers" and "Lost" have similar avg revenue ($271–$273), confirming most one-time buyers never return.
+- "At Risk" customers average $1,653 revenue - nearly as high as Champions. They've bought frequently but haven't returned in 422 days on average
+- "Lost" is the largest segment (1,554 customers) but lowest value - low ROI to re-engage
+- "New Customers" and "Lost" have similar avg revenue ($271-$273), confirming most one-time buyers never return
 
 **Business Recommendations:**
-- Launch a win-back campaign targeting "At Risk" with a personalized discount (high ROI given their revenue history).
-- Nurture "Potential Loyalists" with loyalty points or early access to new products.
-- Don't over-invest in "Lost" — focus budget on Champions and At Risk.
+- Launch a win-back campaign targeting "At Risk" with a personalized discount (high ROI given their revenue history)
+- Nurture "Potential Loyalists" with loyalty points or early access to new products
+- Don't over-invest in "Lost" - focus budget on Champions and At Risk
 
 ---
 
-## Analysis 3 — Product & Category Performance
+## Product & Category Performance
 
-**Goal:** Identify which categories and products drive the most revenue to guide sourcing and marketing decisions.
+**Goal:** Identify which categories and products drive the most revenue to guide sourcing and marketing decisions
 
 ```sql
 SELECT
@@ -169,20 +187,20 @@ ORDER BY total_revenue DESC;
 | Groceries | $676K | 41,313 | $16 | 3.53 |
 
 **Findings:**
-- Electronics alone accounts for ~47% of total revenue despite similar unit volumes to other categories — purely driven by high average price ($848).
-- Groceries has the lowest revenue despite reasonable unit volume — very low margin category.
-- Ratings are nearly identical across all categories (3.52–3.59), suggesting no category has a quality differentiation advantage.
+- Electronics alone accounts for ~47% of total revenue despite similar unit volumes to other categories — purely driven by high average price ($848)
+- Groceries has the lowest revenue despite reasonable unit volume - very low margin category
+- Ratings are nearly identical across all categories (3.52-3.59), suggesting no category has a quality differentiation advantage
 
 **Business Recommendations:**
-- Double down on Electronics inventory and marketing — highest revenue leverage per unit.
-- For Groceries, consider whether the category is worth maintaining or should be repositioned as a traffic driver.
-- Since ratings are flat across categories, focus on review volume (social proof) rather than chasing higher scores.
+- Double down on Electronics inventory and marketing - highest revenue leverage per unit
+- For Groceries, consider whether the category is worth maintaining or should be repositioned as a traffic driver
+- Since ratings are flat across categories, focus on review volume (social proof) rather than chasing higher scores
 
 ---
 
-## Analysis 4 — Cohort Retention
+## Cohort Retention
 
-**Goal:** Measure how well the platform retains customers after their first purchase.
+**Goal:** Measure how well the platform retains customers after their first purchase
 
 ```sql
 WITH first_order AS (
@@ -224,20 +242,20 @@ ORDER BY r.cohort_month, r.month_number;
 | 6 | 29 | 5.7% |
 
 **Findings:**
-- Month-1 retention is only ~5% across all cohorts — critically low. The platform loses 95% of customers after their first order.
-- Retention stabilizes at 3–6% from month 2 onward, suggesting a small loyal core but no meaningful re-engagement.
-- No cohort shows improvement over time, meaning the problem is structural, not seasonal.
+- Month-1 retention is only ~5% across all cohorts — critically low. The platform loses 95% of customers after their first order
+- Retention stabilizes at 3-6% from month 2 onward, suggesting a small loyal core but no meaningful re-engagement
+- No cohort shows improvement over time, meaning the problem is structural, not seasonal
 
 **Business Recommendations:**
-- Implement a post-purchase email sequence: order confirmation → delivery follow-up → "You might also like" at day 14 → discount at day 30.
-- Introduce a loyalty/points program to incentivize second purchases.
-- Investigate whether the product catalog has enough repeat-purchase categories (Groceries, Beauty) to drive natural retention.
-
+- Implement a post-purchase email sequence: order confirmation → delivery follow-up → "You might also like" at day 14 → discount at day 30
+- Introduce a loyalty/points program to incentivize second purchases
+- Investigate whether the product catalog has enough repeat-purchase categories (Groceries, Beauty) to drive natural retention
+- 
 ---
 
-## Analysis 5 — Reviews Impact on Sales & Returns
+## Reviews Impact on Sales & Returns
 
-**Goal:** Understand whether review ratings actually drive sales volume and return rates.
+**Goal:** Understand whether review ratings actually drive sales volume and return rates
 
 ```sql
 WITH product_stats AS (
@@ -275,14 +293,14 @@ GROUP BY rating_band ORDER BY avg_revenue DESC;
 | 5star (4.5–5.0) | 27 | 115 | $13,272 | 22.0% |
 
 **Findings:**
-- Counter-intuitive: 3-star products generate the highest average revenue ($48,753) and sell the most units. This is partly because there are far more 3-star products (1,506 vs 27 five-star products).
-- Return rate is nearly identical across all rating bands (~21–22%), meaning customer satisfaction scores do NOT predict returns. Returns are likely driven by logistics, sizing, or expectation mismatch — not product quality.
-- Very few products achieve 5-star status (only 27), and they sell fewer units — possibly niche or premium items.
+- Counter-intuitive: 3-star products generate the highest average revenue ($48,753) and sell the most units. This is partly because there are far more 3-star products (1,506 vs 27 five-star products)
+- Return rate is nearly identical across all rating bands (~21-22%), meaning customer satisfaction scores do NOT predict returns. Returns are likely driven by logistics, sizing, or expectation mismatch — not product quality
+- Very few products achieve 5-star status (only 27), and they sell fewer units — possibly niche or premium items
 
 **Business Recommendations:**
-- Don't suppress or hide 3-star products — they are your volume drivers.
-- Investigate return reasons independently of ratings (add a return reason field to the data model).
-- Focus review strategy on increasing review *volume* rather than chasing higher scores, as volume correlates with sales.
+- Don't suppress or hide 3-star products — they are your volume drivers
+- Investigate return reasons independently of ratings (add a return reason field to the data model)
+- Focus review strategy on increasing review *volume* rather than chasing higher scores, as volume correlates with sales
 
 ---
 
